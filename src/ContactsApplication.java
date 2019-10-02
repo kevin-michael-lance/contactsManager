@@ -10,7 +10,8 @@ public class ContactsApplication {
     public static void main(String[] args) {
 
         List<Contact> contactList = loadcontacts();
-
+        boolean leave = false;
+    do {
 
         switch (printMenu()){
             case 1:
@@ -18,18 +19,20 @@ public class ContactsApplication {
                 break;
 
             case 2:
-
+               contactList = addContact(contactList);
                 break;
             case 3:
-
+                searchContact(contactList);
                 break;
             case 4:
-
+               contactList = deleteContact(contactList);
                 break;
             case 5:
-
+                 leave = true;
                 break;
         }
+
+    }while (!leave);
 
     }
 
@@ -70,6 +73,57 @@ public class ContactsApplication {
             System.out.println(contact.getName() + " | " + contact.getNumber());
 
         }
+    }
+
+    public static List<Contact> addContact(List<Contact> contactList){
+        Input input = new Input();
+        String name = input.getString("Whats the name");
+        String number = input.getString("Whats the number");
+
+        Contact contact = new Contact(name,number);
+
+        contactList.add(contact);
+
+        return contactList;
+    }
+
+    public static void searchContact(List<Contact> contactList){
+        Input input = new Input();
+        String userSearch = input.getString("Search a name");
+        for (Contact contact : contactList){
+            if (userSearch.equals(contact.getName())){
+                System.out.println(contact.getName() + " | " + contact.getNumber());
+            }
+        }
+    }
+
+    public static List<Contact> deleteContact(List<Contact> contactList){
+        Input input = new Input();
+
+        String name = input.getString("What contact do you want to delete? ");
+        int delete = -1;
+        for (Contact contact : contactList){
+            if (name.equals(contact.getName())){
+                delete = contactList.indexOf(contact);
+            }
+        }
+
+        contactList.remove(delete);
+
+        return contactList;
+    }
+
+    public static void updateContact(List<Contact> contactList){
+//        Path path = Paths.get("data", "contacts.txt");
+//        try{
+//           List<String> bufferContact;
+//            for (Contact contact : contactList){
+////               contact.getName() + "/" + contact.getNumber();
+//            }
+//
+////        }catch (IOException e){
+//            e.printStackTrace();
+//        }
     }
 
 }
