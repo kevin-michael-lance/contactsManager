@@ -63,7 +63,7 @@ public class ContactsApplication {
      */
     public static int printMenu() {
         Input input = new Input();
-        return input.getInt(1, 5, "1. View contacts.\n" +
+        return input.getInt(1, 5, "\n1. View contacts.\n" +
                 "2. Add a new contact.\n" +
                 "3. Search a contact by name.\n" +
                 "4. Delete an existing contact.\n" +
@@ -76,11 +76,11 @@ public class ContactsApplication {
          Uses for each loop to print out each individual element.
      */
     public static void viewContacts(List<Contact> contactList) {
-        System.out.println("Name | Phone number");
-        System.out.println("---------------");
 
+        System.out.println(String.format("%-15s| Phone Number", "Name"));
+        System.out.println("-----------------------------");
         for (Contact contact : contactList) {
-            System.out.println(contact.getName() + " | " + contact.getNumber());
+            System.out.println(String.format(" %-15s| %s", contact.getName(), contact.getNumber()));
         }
     }
 
@@ -90,12 +90,62 @@ public class ContactsApplication {
      */
     public static void addContact(List<Contact> contactList) {
         Input input = new Input();
-        String name = input.getString("Whats the name");
-        String number = input.getString("Whats the number");
+        String name = input.getString("What is the contact's name?");
+        String number;
+        boolean valid = false;
 
-        Contact contact = new Contact(name, number);
+        //Input validation loop
+        do {
+            number = input.getString("What is their number(without dashes)?");
 
-        contactList.add(contact);
+            //Check if the phone number is a number
+            try {
+                Long.parseLong(number);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid phone number");
+                continue;
+            }
+
+            //Format the phone number based on the length
+            if (number.length() == 7 || number.length() == 10) {
+                valid = true;
+                if (number.length() == 7) {
+                    number = String.format("%s-%s", number.substring(0, 3), number.substring(3));
+                } else {
+                    number = String.format("%s-%s-%s", number.substring(0, 3), number.substring(3, 6), number.substring(6));
+                }
+            } else {
+                System.out.println("Invalid number length, please try again");
+            }
+
+        } while (!valid);
+
+        boolean overwrite = false;
+        int place = -1;
+
+        //Check if the contact already exists
+        for (Contact contact : contactList) {
+            if (name.equals(contact.getName())) {
+                //Ask if user wants to overwrite
+                if (input.yesNo(String.format("There's already a contact named %s. Do you want to overwrite it?", name))) {
+                    place = contactList.indexOf(contact);
+                    overwrite = true;
+                    //Or enter another name
+                } else if (input.yesNo("Would you like to enter a different contact?")) {
+                    addContact(contactList);
+                }
+
+            }
+        }
+
+        Contact newContact = new Contact(name, number);
+
+        //Overwrite or add based on user
+        if (overwrite) {
+            contactList.set(place, newContact);
+        } else {
+            contactList.add(newContact);
+        }
     }
 
 
@@ -108,7 +158,7 @@ public class ContactsApplication {
         String userSearch = input.getString("Search a name");
         for (Contact contact : contactList) {
             if (userSearch.equals(contact.getName())) {
-                System.out.println(contact.getName() + " | " + contact.getNumber());
+                System.out.println(String.format(" %-15s| %-15s", contact.getName(), contact.getNumber()));
             }
         }
     }
