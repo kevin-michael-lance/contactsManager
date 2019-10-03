@@ -11,52 +11,52 @@ public class ContactsApplication {
 
         List<Contact> contactList = loadcontacts();
         boolean leave = false;
-    do {
+        do {
 
-        switch (printMenu()){
-            case 1:
-                viewContacts(contactList);
-                break;
+            switch (printMenu()) {
+                case 1:
+                    viewContacts(contactList);
+                    break;
 
-            case 2:
-               contactList = addContact(contactList);
-                break;
-            case 3:
-                searchContact(contactList);
-                break;
-            case 4:
-               contactList = deleteContact(contactList);
-                break;
-            case 5:
-                 leave = true;
-                break;
-        }
+                case 2:
+                    contactList = addContact(contactList);
+                    break;
+                case 3:
+                    searchContact(contactList);
+                    break;
+                case 4:
+                    contactList = deleteContact(contactList);
+                    break;
+                case 5:
+                    leave = true;
+                    break;
+            }
 
-    }while (!leave);
-
+        } while (!leave);
+        updateContact(contactList);
     }
 
-    public static List<Contact> loadcontacts(){
+    public static List<Contact> loadcontacts() {
         List<Contact> contacts = new ArrayList<>();
         Path path = Paths.get("data", "contacts.txt");
-        try{
+        try {
             List<String> bufferList = Files.readAllLines(path);
-            for(String line : bufferList){
-               String [] split = line.split("/");
-               Contact contact = new Contact(split[0], split[1]);
-               contacts.add(contact);
+            for (String line : bufferList) {
+                String[] split = line.split("/");
+                Contact contact = new Contact(split[0], split[1]);
+                contacts.add(contact);
 
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-       return contacts;
+        return contacts;
     }
 
-    public static int printMenu(){
+    public static int printMenu() {
         Input input = new Input();
-        return  input.getInt(1,5,  "1. View contacts.\n" +
+        return input.getInt(1, 5, "1. View contacts.\n" +
                 "2. Add a new contact.\n" +
                 "3. Search a contact by name.\n" +
                 "4. Delete an existing contact.\n" +
@@ -65,45 +65,45 @@ public class ContactsApplication {
 
     }
 
-    public static void viewContacts(List<Contact> contactList){
+    public static void viewContacts(List<Contact> contactList) {
         System.out.println("Name | Phone number");
         System.out.println("---------------");
 
-        for(Contact contact: contactList){
+        for (Contact contact : contactList) {
             System.out.println(contact.getName() + " | " + contact.getNumber());
 
         }
     }
 
-    public static List<Contact> addContact(List<Contact> contactList){
+    public static List<Contact> addContact(List<Contact> contactList) {
         Input input = new Input();
         String name = input.getString("Whats the name");
         String number = input.getString("Whats the number");
 
-        Contact contact = new Contact(name,number);
+        Contact contact = new Contact(name, number);
 
         contactList.add(contact);
 
         return contactList;
     }
 
-    public static void searchContact(List<Contact> contactList){
+    public static void searchContact(List<Contact> contactList) {
         Input input = new Input();
         String userSearch = input.getString("Search a name");
-        for (Contact contact : contactList){
-            if (userSearch.equals(contact.getName())){
+        for (Contact contact : contactList) {
+            if (userSearch.equals(contact.getName())) {
                 System.out.println(contact.getName() + " | " + contact.getNumber());
             }
         }
     }
 
-    public static List<Contact> deleteContact(List<Contact> contactList){
+    public static List<Contact> deleteContact(List<Contact> contactList) {
         Input input = new Input();
 
         String name = input.getString("What contact do you want to delete? ");
         int delete = -1;
-        for (Contact contact : contactList){
-            if (name.equals(contact.getName())){
+        for (Contact contact : contactList) {
+            if (name.equals(contact.getName())) {
                 delete = contactList.indexOf(contact);
             }
         }
@@ -113,17 +113,17 @@ public class ContactsApplication {
         return contactList;
     }
 
-    public static void updateContact(List<Contact> contactList){
-//        Path path = Paths.get("data", "contacts.txt");
-//        try{
-//           List<String> bufferContact;
-//            for (Contact contact : contactList){
-////               contact.getName() + "/" + contact.getNumber();
-//            }
-//
-////        }catch (IOException e){
-//            e.printStackTrace();
-//        }
+    public static void updateContact(List<Contact> contactList) {
+        Path path = Paths.get("data", "contacts.txt");
+        try {
+            List<String> bufferContact = new ArrayList<>();
+            for (Contact contact : contactList) {
+                bufferContact.add(contact.getName() + "/" + contact.getNumber());
+            }
+            Files.write(path, bufferContact);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
